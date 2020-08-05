@@ -6,46 +6,51 @@ import { Icon } from 'native-base';
 
 export default SubjectCard = (props) => {
 
-    // const [color, setColor] = useState()
-    // const [percentage, setPercentage] = useState()
+    const [color, setColor] = useState()
+    const [percentage, setPercentage] = useState()
+    const [alertmsg, setAlertmsg] = useState('')
 
     useEffect(() => {
-        // console.log('s')
-        console.log(props.item.subject)
+        cardHandler();
 
+        
     }, [props.item.total]);
 
-    let percent = Math.trunc((props.item.present / props.item.total) * 1000);
-    percent = percent / 10;
+    const cardHandler = async () => {
+        if (props.item.total == 0) {
+            setColor(colours.green1)
+            setPercentage(100);
+        }
+        else {
+            const absent = props.item.total - props.item.present;
+            const percent = Math.trunc((props.item.present / props.item.total) * 100);
 
-    if (props.item.total == 0)
-        percent = 100;
+            setPercentage(percent);
+            setAlertmsg("")
 
-    const absent = props.item.total - props.item.present;
-
-    let colors = colours.green1
-
-    let alertmsg = "";
-    if (percent < props.percent) {
-        let numClss = (absent * (100 / (100 - props.percent)));
-        numClss = Math.ceil(numClss - props.item.present - absent);
-        if (numClss) {
-            colors = colours.red1;
-            alertmsg = "You must attend " + numClss + " class";
-
+            if (percent < props.percent) {
+                let numClss = (absent * (100 / (100 - props.percent)));
+                numClss = Math.ceil(numClss - props.item.total);
+                setColor(colours.red1)
+                if (numClss) {
+                    setAlertmsg("You must attend " + numClss + " class")
+                }
+            }
+            else if (percent > props.percent) {
+                let numClss = (props.item.present * (100 / props.percent));
+                numClss = Math.trunc(numClss - props.item.total);
+                setColor(colours.green1)
+                if (numClss) {
+                    setAlertmsg("You may bunk " + numClss + " class")
+                }
+            }
+            else {
+                setColor(colours.green1)
+            }
         }
     }
-    else if (percent > props.percent) {
-        let numClss = (props.item.present * (100 / props.percent));
-        numClss = Math.trunc(numClss - props.item.total);
-        if (numClss) {
-            colors = colours.green1;
-            alertmsg = "You may bunk " + numClss + " class";
-        }
-    }
-    else {
-        colors = colours.green1;
-    }
+
+
     return (
 
         <View style={styles.box}>
@@ -54,7 +59,7 @@ export default SubjectCard = (props) => {
                 <Text style={styles.mainText}>
                     {props.item.subject}
                 </Text>
-                <Text style={{ color: colors, fontSize: 15 }}>
+                <Text style={{ color: color, fontSize: 15 }}>
                     {alertmsg}
                 </Text>
             </View>
@@ -69,13 +74,13 @@ export default SubjectCard = (props) => {
                 </TouchableOpacity>
 
                 <ProgressCircle
-                    percent={Math.floor(percent)}
+                    percent={percentage}
                     radius={40}
                     borderWidth={8}
-                    color={colors}
+                    color={color}
                     bgColor="#fff"
                 >
-                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{Math.floor(percent)}%</Text>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold' }}>{percentage}%</Text>
                     <Text style={{ fontSize: 10, fontWeight: 'bold' }}>{props.item.present} / {props.item.total}</Text>
 
                 </ProgressCircle>

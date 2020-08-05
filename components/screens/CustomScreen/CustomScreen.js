@@ -24,30 +24,66 @@ export default CustomScreen = ({ navigation }) => {
 
     }, []);
 
+    const undoHandler = () => {
+        // if (lastOp) {
+            if (lastOp.op === 0) {
+                const data = [...subjects];
+                data[lastOp.index].total = data[lastOp.index].total - 1;
+
+                updateSubjects(data).then(() => {
+                    setLastOp(null)
+                    setSubjects(data)
+                })
+            }
+            else if (lastOp.op === 1) {
+                const data = [...subjects];
+                data[lastOp.index].total = data[lastOp.index].total - 1;
+                data[lastOp.index].present = data[lastOp.index].present - 1;
+
+                updateSubjects(data).then(() => {
+                    setLastOp(null)
+                    setSubjects(data)
+                })
+            }
+        // }
+    }
+
     const presentClicked = (index) => {
         try {
-            
-            const data = [...subjects];
-            data[index].present=data[index].present+1;
-            data[index].total=data[index].total+1;
 
-            updateSubjects(data).then(() => setSubjects(data))
+            const data = [...subjects];
+            data[index].present = data[index].present + 1;
+            data[index].total = data[index].total + 1;
+
+            updateSubjects(data).then(() => {
+                setLastOp({
+                    index: index,
+                    op: 1,
+                })
+                setSubjects(data)
+            })
 
         }
-     
-        catch(e) {
+
+        catch (e) {
             alert(e);
         }
     }
 
-    const bunkedClicked = async (index) => {
+    const bunkedClicked = (index) => {
         try {
             const data = [...subjects];
-            data[index].total=data[index].total+1;
-            updateSubjects(data).then(() => setSubjects(data))
+            data[index].total = data[index].total + 1;
+            updateSubjects(data).then(() => {
+                setLastOp({
+                    index: index,
+                    op: 0,
+                })
+                setSubjects(data)
+            })
         }
-     
-        catch(e) {
+
+        catch (e) {
             alert(e);
         }
     }
@@ -70,7 +106,7 @@ export default CustomScreen = ({ navigation }) => {
                 </Body>
 
                 <Right>
-                    <TouchableOpacity onPress={() => alert('undo')}>
+                    <TouchableOpacity onPress={() => undoHandler()} disabled={!lastOp}>
                         <Text style={{
                             paddingRight: 10, color: colors.color5,
                             fontWeight: 'bold',
@@ -83,11 +119,11 @@ export default CustomScreen = ({ navigation }) => {
             </Header>
             <FlatList
                 data={subjects}
-                style={{padding: 8}}
+                style={{ padding: 8 }}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                    <SubjectCard item={item} presentClicked = {() => presentClicked(index)}
-                    bunkedClicked = {() => bunkedClicked(index)} percent={75} />
+                    <SubjectCard item={item} presentClicked={() => presentClicked(index)}
+                        bunkedClicked={() => bunkedClicked(index)} percent={78} />
 
                 )}
             />
