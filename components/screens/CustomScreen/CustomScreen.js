@@ -83,6 +83,7 @@ export default CustomScreen = ({ navigation }) => {
             </Header>
             <FlatList
                 data={subjects}
+                style={{padding: 8}}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
                     <SubjectCard item={item} presentClicked = {() => presentClicked(index)}

@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ProgressCircle from 'react-native-progress-circle';
-
+import colours from '../../../constants/colors'
 
 export default SubjectCard = (props) => {
 
-    const [color, setColor] = useState()
+    // const [color, setColor] = useState()
 
     let percent = Math.trunc((props.item.present / props.item.total) * 1000);
     percent=percent/10;
@@ -14,6 +14,8 @@ export default SubjectCard = (props) => {
         percent = 100;
 
     const absent = props.item.total-props.item.present;
+
+    let colors = colours.green1
     
     let alertmsg = "";
     if(percent<props.percent)
@@ -22,7 +24,7 @@ export default SubjectCard = (props) => {
         numClss = Math.ceil( numClss - props.item.present - absent);
         if(numClss)
         {
-            colors = '#f33';
+            colors = colours.red1;
             alertmsg = "You must attend "+numClss+" class";
 
         }
@@ -32,17 +34,17 @@ export default SubjectCard = (props) => {
         let numClss = (props.item.present*(100/props.percent));
         numClss = Math.trunc(numClss - props.item.total);
         if(numClss){
-            colors = '#afa';
+            colors = colours.green1;
             alertmsg = "You may bunk " + numClss + " class";
         }
     }
     else
     {
-        colors = '#afa';
+        colors = colours.green1;
     }
     return (
 
-    <View key={props.index} style={styles.box}>
+    <View style={styles.box}>
 
         <View style = {{padding: 5, width: '50%'}}>
             <Text style = {styles.mainText}>
@@ -90,14 +92,13 @@ export default SubjectCard = (props) => {
 const styles = StyleSheet.create({
    box: {
         padding: 8,
-        backgroundColor: '#ccc',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingLeft: 10,
         height: 100,
         width: '100%',
         margin: 2,
-        borderBottomWidth: 2,
+        borderBottomWidth: 1,
         borderBottomColor: '#aaa',
         borderRadius: 10,
         flexDirection: 'row',
@@ -110,20 +111,17 @@ const styles = StyleSheet.create({
     },
    presentBtn: {
         borderRadius: 30,
-        backgroundColor: "#5a5",
+        backgroundColor: colours.green2,
         textAlign: 'center',
-        justifyContent: 'center',
         height: 45,
         width: 45,
    },
    bunkBtn: {
         borderRadius: 30,
-        backgroundColor: "#f33",
-        alignContent: 'center',
-        justifyContent: 'center',
+        backgroundColor: colours.green2,
+        textAlign: 'center',
         height: 45,
         width: 45,
-
     },
     
 });

@@ -17,7 +17,6 @@ export const updateSubjects = (subjects) => {
         try {
             await AsyncStorage.removeItem('subjects');
             await AsyncStorage.setItem('subjects', JSON.stringify(subjects));
-            console.log(' updated')
             return resolve(true);
 
         } catch (e) {
