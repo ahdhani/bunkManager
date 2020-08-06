@@ -1,50 +1,82 @@
 import React, { useState, useEffect } from 'react'
+import { useFocusEffect } from '@react-navigation/native';
 import { TouchableOpacity, FlatList } from 'react-native'
 import { Container, Button, Text, Card, Icon, Content, Right, Header, Body, Left } from 'native-base'
 import ProgressCircle from 'react-native-progress-circle';
 
 import colors from '../../../constants/colors'
-import { updateSubjects, fetchSubjects } from '../../functions/subjects'
+import { updateSubjects, fetchSubjects, fetchConfig } from '../../functions/subjects'
 import SubjectCard from './SubjectCard'
-import gstyles from '../../../constants/gstyles'
-// import { useNavigation } from '@react-navigation/native';
 
 export default CustomScreen = ({ navigation }) => {
     // const navigation = useNavigation();
     const [subjects, setSubjects] = useState()
     const [lastOp, setLastOp] = useState()
+    const [percent, setPercent] = useState()
 
-    useEffect(() => {
-        fetchSubjects().then(res => {
-            if (res)
-                setSubjects(res)
-            else
-                navigation.navigate('Edit Subjects')
-        })
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchConfig().then(res => {
+                if (res) {
+                    setPercent(res.percent)
+                }
+                else
+                    navigation.navigate('Configure')
+            })
+    
+            fetchSubjects().then(res => {
+                if (res)
+                    setSubjects(res)
+                else
+                    navigation.navigate('Edit Subjects')
+            })
+    
+        }, [])
+      );
 
-    }, []);
+    // useEffect(() => {
+
+    //     fetchConfig().then(res => {
+    //         if (res) {
+    //             setPercent(res.percent)
+    //         }
+    //         else
+    //             navigation.navigate('Configure',
+    //                 {
+    //                     onGoBack: () => fetchConfig().then(res => setPercent(res.percent)),
+    //                 })
+    //     })
+
+    //     fetchSubjects().then(res => {
+    //         if (res)
+    //             setSubjects(res)
+    //         else
+    //             navigation.navigate('Edit Subjects')
+    //     })
+
+    // }, []);
 
     const undoHandler = () => {
         // if (lastOp) {
-            if (lastOp.op === 0) {
-                const data = [...subjects];
-                data[lastOp.index].total = data[lastOp.index].total - 1;
+        if (lastOp.op === 0) {
+            const data = [...subjects];
+            data[lastOp.index].total = data[lastOp.index].total - 1;
 
-                updateSubjects(data).then(() => {
-                    setLastOp(null)
-                    setSubjects(data)
-                })
-            }
-            else if (lastOp.op === 1) {
-                const data = [...subjects];
-                data[lastOp.index].total = data[lastOp.index].total - 1;
-                data[lastOp.index].present = data[lastOp.index].present - 1;
+            updateSubjects(data).then(() => {
+                setLastOp(null)
+                setSubjects(data)
+            })
+        }
+        else if (lastOp.op === 1) {
+            const data = [...subjects];
+            data[lastOp.index].total = data[lastOp.index].total - 1;
+            data[lastOp.index].present = data[lastOp.index].present - 1;
 
-                updateSubjects(data).then(() => {
-                    setLastOp(null)
-                    setSubjects(data)
-                })
-            }
+            updateSubjects(data).then(() => {
+                setLastOp(null)
+                setSubjects(data)
+            })
+        }
         // }
     }
 
@@ -101,8 +133,8 @@ export default CustomScreen = ({ navigation }) => {
                         fontSize: 22, fontWeight: 'bold',
                         color: colors.color5,
                     }}>
-                        Bunker
-                        </Text>
+                        Bunker {percent}
+                    </Text>
                 </Body>
 
                 <Right>
@@ -123,7 +155,7 @@ export default CustomScreen = ({ navigation }) => {
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
                     <SubjectCard item={item} presentClicked={() => presentClicked(index)}
-                        bunkedClicked={() => bunkedClicked(index)} percent={78} />
+                        bunkedClicked={() => bunkedClicked(index)} percent={percent} />
 
                 )}
             />

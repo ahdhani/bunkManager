@@ -7,7 +7,7 @@ import { Icon } from 'native-base';
 export default SubjectCard = (props) => {
 
     const [color, setColor] = useState()
-    const [percentage, setPercentage] = useState()
+    const [percentage, setPercentage] = useState(100)
     const [alertmsg, setAlertmsg] = useState('')
 
     useEffect(() => {
